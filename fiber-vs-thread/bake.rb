@@ -6,7 +6,7 @@ require 'json'
 require 'time'
 
 # Array of Ruby versions to test
-RUBY_VERSIONS = %w[2.5 2.6 2.7 3.0 3.1 3.2 3.4].freeze
+RUBY_VERSIONS = %w[2.5 2.6 2.7 3.0 3.1 3.2 3.3 3.4 3.5-rc].freeze
 
 # Public tasks that can be invoked with `bake <task_name>`
 
@@ -47,7 +47,9 @@ def parse_benchmark_output(fiber_output, thread_output)
 			parsed[:fiber_creation_rate] = fiber_data['creation_rate']
 			parsed[:fiber_switch_rate] = fiber_data['switch_rate']
 			parsed[:fiber_memory_used] = fiber_data['memory_used_bytes']
-			parsed[:fiber_memory_per_unit] = fiber_data['memory_per_fiber_bytes']
+			parsed[:fiber_memory_per_unit] = fiber_data['memory_per_unit_bytes']
+			parsed[:count] = fiber_data['count']
+			parsed[:switches] = fiber_data['switches']
 		end
 		
 		if thread_data
@@ -55,7 +57,7 @@ def parse_benchmark_output(fiber_output, thread_output)
 			parsed[:thread_creation_rate] = thread_data['creation_rate']
 			parsed[:thread_switch_rate] = thread_data['switch_rate']
 			parsed[:thread_memory_used] = thread_data['memory_used_bytes']
-			parsed[:thread_memory_per_unit] = thread_data['memory_per_thread_bytes']
+			parsed[:thread_memory_per_unit] = thread_data['memory_per_unit_bytes']
 		end
 		
 		# Calculate performance ratio if we have both times
@@ -193,6 +195,8 @@ def run_benchmark_for_version(version, force: false)
 		'ruby_version' => version,
 		'platform' => version_results['platform'],
 		'memory_usage' => {
+			'count' => memory_data[:count],
+			'switches' => memory_data[:switches],
 			'time_ms' => version_results['memory_usage']['fiber_time'],
 			'creation_rate' => version_results['memory_usage']['fiber_creation_rate'],
 			'switch_rate' => version_results['memory_usage']['fiber_switch_rate'],
@@ -211,6 +215,8 @@ def run_benchmark_for_version(version, force: false)
 		'ruby_version' => version,
 		'platform' => version_results['platform'],
 		'memory_usage' => {
+			'count' => memory_data[:count],
+			'switches' => memory_data[:switches],
 			'time_ms' => version_results['memory_usage']['thread_time'],
 			'creation_rate' => version_results['memory_usage']['thread_creation_rate'],
 			'switch_rate' => version_results['memory_usage']['thread_switch_rate'],
@@ -248,6 +254,8 @@ def load_results
 			# Reconstruct the combined format for table generation
 			results[version] = {
 				'platform' => fiber_data['platform'],
+				'count' => fiber_data['memory_usage']['count'],
+				'switches' => fiber_data['memory_usage']['switches'],
 				'memory_usage' => {
 					'fiber_time' => fiber_data['memory_usage']['time_ms'],
 					'thread_time' => thread_data['memory_usage']['time_ms'],
@@ -278,9 +286,9 @@ def load_results
 end
 
 def generate_markdown_tables(results)
-	puts "\n### Performance Summary\n"
-	puts "| Ruby Version | Allocation Ratio | Fiber Alloc (μs) | Thread Alloc (μs) | Switch Ratio | Fiber Switch (μs) | Thread Switch (μs) |"
-	puts "|--------------|------------------|-------------------|-------------------|--------------|-------------------|--------------------| "
+	puts "\n### Performance Summary\n\n"
+	puts "| Ruby Version | Fiber Alloc (μs)  | Thread Alloc (μs) | Allocation Ratio | Fiber Switch (μs) | Thread Switch (μs) | Switch Ratio |"
+	puts "|--------------|-------------------|-------------------|------------------|-------------------|--------------------|--------------| "
 
 	results.each do |version, data|
 		allocation_ratio = data['memory_usage']['ratio'] || 'N/A'
@@ -308,15 +316,15 @@ def generate_markdown_tables(results)
 		allocation_ratio_formatted = allocation_ratio.is_a?(Numeric) ? "%.1fx" % allocation_ratio : allocation_ratio
 		switch_ratio_formatted = switch_ratio.is_a?(Numeric) ? "%.1fx" % switch_ratio : switch_ratio
 		
-		puts "| #{version.ljust(12)} | #{allocation_ratio_formatted.ljust(15)} | #{fiber_alloc_formatted.ljust(17)} | #{thread_alloc_formatted.ljust(17)} | #{switch_ratio_formatted.ljust(12)} | #{fiber_switch_formatted.ljust(17)} | #{thread_switch_formatted.ljust(18)} |"
+		puts "| #{version.ljust(12)} | #{fiber_alloc_formatted.ljust(17)} | #{thread_alloc_formatted.ljust(17)} | #{allocation_ratio_formatted.ljust(16)} | #{fiber_switch_formatted.ljust(17)} | #{thread_switch_formatted.ljust(18)} | #{switch_ratio_formatted.ljust(12)} |"
 	end
 
 	puts "\n*Allocation times are per individual fiber/thread (10,000 total allocations)*"
 	puts "*Context switch times are per individual switch (2 workers × 10,000 switches = 20,000 total)*"
 
-	puts "\n### Context Switching Performance\n"
+	puts "\n### Context Switching Performance\n\n"
 	puts "| Ruby Version | Fiber Switches/sec | Thread Switches/sec | Performance Ratio |"
-	puts "|--------------|-------------------|--------------------|--------------------|"
+	puts "|--------------|--------------------|---------------------|-------------------|"
 
 	results.each do |version, data|
 		switch_ratio = data['context_switching']['ratio'] || 'N/A'
@@ -328,14 +336,15 @@ def generate_markdown_tables(results)
 		thread_rate_formatted = thread_switch_rate.is_a?(Numeric) ? thread_switch_rate.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse : thread_switch_rate
 		switch_ratio_formatted = switch_ratio.is_a?(Numeric) ? "%.1fx" % switch_ratio : switch_ratio
 		
-		puts "| #{version.ljust(12)} | #{fiber_rate_formatted.ljust(17)} | #{thread_rate_formatted.ljust(18)} | #{switch_ratio_formatted.ljust(17)} |"
+		puts "| #{version.ljust(12)} | #{fiber_rate_formatted.ljust(18)} | #{thread_rate_formatted.ljust(19)} | #{switch_ratio_formatted.ljust(17)} |"
 	end
 
-	puts "\n### Memory Usage Per Unit\n"
-	puts "| Ruby Version | Fiber Memory (bytes) | Thread Memory (bytes) | Fiber Total (MB) | Thread Total (MB) |"
-	puts "|--------------|---------------------|----------------------|------------------|-------------------|"
+	puts "\n### Memory Usage Per Unit\n\n"
+	puts "| Ruby Version | Count      | Fiber Memory (bytes) | Thread Memory (bytes) | Fiber Total (MB) | Thread Total (MB) |"
+	puts "|--------------|------------|----------------------|-----------------------|-------------------|-------------------|"
 
 	results.each do |version, data|
+		count = data['count'].to_s
 		fiber_mem_per_unit = data['memory_usage']['fiber_memory_per_unit'] || 'N/A'
 		thread_mem_per_unit = data['memory_usage']['thread_memory_per_unit'] || 'N/A'
 		fiber_mem_total = data['memory_usage']['fiber_memory_used'] || 'N/A'
@@ -349,6 +358,6 @@ def generate_markdown_tables(results)
 		fiber_per_formatted = fiber_mem_per_unit.is_a?(Numeric) ? fiber_mem_per_unit.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse : fiber_mem_per_unit
 		thread_per_formatted = thread_mem_per_unit.is_a?(Numeric) ? thread_mem_per_unit.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse : thread_mem_per_unit
 		
-		puts "| #{version.ljust(12)} | #{fiber_per_formatted.ljust(19)} | #{thread_per_formatted.ljust(20)} | #{fiber_total_mb.ljust(16)} | #{thread_total_mb.ljust(17)} |"
+		puts "| #{version.ljust(12)} | #{count.ljust(10)} | #{fiber_per_formatted.ljust(20)} | #{thread_per_formatted.ljust(21)} | #{fiber_total_mb.ljust(17)} | #{thread_total_mb.ljust(17)} |"
 	end
 end

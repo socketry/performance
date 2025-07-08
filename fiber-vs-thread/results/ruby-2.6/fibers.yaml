@@ -1,14 +1,16 @@
 ---
-timestamp: '2025-07-08T16:26:41+12:00'
+timestamp: '2025-07-09T00:45:38+12:00'
 ruby_version: '2.6'
 platform: x86_64-linux
 memory_usage:
-  time_ms: 78.583
-  creation_rate: 127253
-  switch_rate: 254507
-  memory_used_bytes: 96731136
-  memory_per_unit_bytes: 9673
+  count: 10000
+  switches: 2
+  time_ms: 69.85
+  creation_rate: 143164
+  switch_rate: 286328
+  memory_used_bytes: 97300480
+  memory_per_unit_bytes: 9730
 context_switching:
-  time_ms: 2.956
-  creation_rate: 677
-  switch_rate: 6766889
+  time_ms: 3.02
+  creation_rate: 662
+  switch_rate: 6622742

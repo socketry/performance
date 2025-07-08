@@ -1,0 +1,16 @@
+---
+timestamp: '2025-07-09T00:46:06+12:00'
+ruby_version: '3.3'
+platform: x86_64-linux
+memory_usage:
+  count: 10000
+  switches: 2
+  time_ms: 44.517
+  creation_rate: 224632
+  switch_rate: 449264
+  memory_used_bytes: 131858432
+  memory_per_unit_bytes: 13185
+context_switching:
+  time_ms: 2.608
+  creation_rate: 767
+  switch_rate: 7669714
