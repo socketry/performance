@@ -5,11 +5,11 @@ platform: x86_64-linux
 memory_usage:
   count: 10000
   switches: 2
-  time_ms: 1404.073
-  creation_rate: 7122
-  switch_rate: 14244
-  memory_used_bytes: 298008576
-  memory_per_unit_bytes: 29800
+  time_ms: 870.726
+  creation_rate: 11485
+  switch_rate: 22969
+  memory_used_bytes: 270270464
+  memory_per_unit_bytes: 27027
 context_switching:
   time_ms: 19.746
   creation_rate: 101
