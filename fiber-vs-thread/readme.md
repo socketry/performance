@@ -189,3 +189,32 @@ Ruby 3.3 introduced an M:N thread scheduler to support Ractors, significantly ch
 **Performance Impact**:
 - **Thread allocation performance regressed**: Due to the removal of the `alloca` optimization and replacement with heap allocation (`ruby_xmalloc`).
 - **Thread switching performance regressed**: Due to the increased complexity of the M:N scheduler? Reintroduction of the timer thread?
+
+## Hardware and Software Environment
+
+The benchmarks were run on a machine with the following specifications:
+
+```
+# Kernel and OS
+Linux aiko 6.15.5-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 06 Jul 2025 11:14:36 +0000 x86_64 GNU/Linux
+Distributor ID: Arch
+Description:   Arch Linux (rolling)
+
+# CPU
+AMD Ryzen 9 9950X3D 16-Core Processor
+Cores: 16 (32 threads)
+L1d: 768 KiB, L1i: 512 KiB, L2: 16 MiB, L3: 128 MiB
+
+# Memory
+Total: 46 GiB
+Free: 39 GiB
+
+# Disk
+/dev/nvme0n1p2: 1.8T total, 1.1T available
+
+# Virtualization
+AMD-V
+
+# Other
+Page size: 4KB
+```
