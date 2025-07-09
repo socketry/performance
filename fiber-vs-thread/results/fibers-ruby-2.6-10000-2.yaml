@@ -1,0 +1,29 @@
+---
+:ruby_version: ruby:2.6
+:platform: x86_64-linux
+:count: 10000
+:switches: 2
+:repeats: 0
+:benchmarks:
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 55.374
+  :creation_rate: 180589
+  :switch_rate: 361177
+:memory_usage:
+  :memory_used_bytes: 96468992
+  :memory_per_unit_bytes: 9646
+  :initial_memory: 15380480
+  :final_memory: 111849472
+  :gc_objects_initial: 18405
+  :gc_objects_final: 48382
+:total_switches: 20000
+:time_ms: 55.374
+:creation_rate: 180589
+:switch_rate: 361177
+:timestamp: '2025-07-09T16:10:49+12:00'
+:mode: :fibers
+:arguments:
+- '10000'
+- '2'

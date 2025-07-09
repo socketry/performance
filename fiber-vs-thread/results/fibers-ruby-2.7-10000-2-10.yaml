@@ -1,0 +1,90 @@
+---
+:ruby_version: ruby:2.7
+:platform: x86_64-linux
+:count: 10000
+:switches: 2
+:repeats: 10
+:benchmarks:
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 33.671
+  :creation_rate: 296989
+  :switch_rate: 593978
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 39.373
+  :creation_rate: 253983
+  :switch_rate: 507965
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 9.585
+  :creation_rate: 1043248
+  :switch_rate: 2086496
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 9.032
+  :creation_rate: 1107199
+  :switch_rate: 2214399
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 9.278
+  :creation_rate: 1077876
+  :switch_rate: 2155752
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 9.02
+  :creation_rate: 1108611
+  :switch_rate: 2217222
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 9.019
+  :creation_rate: 1108824
+  :switch_rate: 2217647
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 9.04
+  :creation_rate: 1106233
+  :switch_rate: 2212467
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 9.311
+  :creation_rate: 1074050
+  :switch_rate: 2148099
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 9.886
+  :creation_rate: 1011530
+  :switch_rate: 2023060
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 10.474
+  :creation_rate: 954756
+  :switch_rate: 1909513
+:memory_usage:
+  :memory_used_bytes: 264548352
+  :memory_per_unit_bytes: 26454
+  :initial_memory: 13815808
+  :final_memory: 278364160
+  :gc_objects_initial: 16798
+  :gc_objects_final: 46783
+:total_switches: 20000
+:time_ms: 10.474
+:creation_rate: 954756
+:switch_rate: 1909513
+:timestamp: '2025-07-09T16:12:22+12:00'
+:mode: :fibers
+:arguments:
+- '10000'
+- '2'
+- '10'

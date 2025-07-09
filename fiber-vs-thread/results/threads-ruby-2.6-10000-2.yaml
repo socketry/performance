@@ -1,0 +1,28 @@
+---
+:ruby_version: ruby:2.6
+:platform: x86_64-linux
+:count: 10000
+:switches: 2
+:benchmarks:
+- :count: 10000
+  :switches: 2
+  :total_switches: 20000
+  :time_ms: 644.2
+  :creation_rate: 15523
+  :switch_rate: 31046
+:memory_usage:
+  :memory_used_bytes: 126287872
+  :memory_per_unit_bytes: 12628
+  :initial_memory: 15441920
+  :final_memory: 141729792
+  :gc_objects_initial: 18395
+  :gc_objects_final: 78370
+:total_switches: 20000
+:time_ms: 644.2
+:creation_rate: 15523
+:switch_rate: 31046
+:timestamp: '2025-07-09T16:10:51+12:00'
+:mode: :threads
+:arguments:
+- '10000'
+- '2'

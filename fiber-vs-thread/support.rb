@@ -1,7 +1,6 @@
-require 'benchmark'
-require 'optparse'
 
-ITERATIONS = 1000
+require 'benchmark'
+require 'yaml'
 
 # Memory profiling utilities
 def get_memory_usage
@@ -36,12 +35,10 @@ end
 
 def force_gc_and_measure
 	# Force garbage collection to get clean measurements
-	3.times { GC.start }
+	3.times{GC.start}
 	
 	return {
 		memory_bytes: get_memory_hwm,
 		gc_stats: get_gc_stats
 	}
 end
-
-
