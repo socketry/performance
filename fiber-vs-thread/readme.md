@@ -23,7 +23,7 @@ Then, to run the complete benchmark across all Ruby versions:
 bake benchmark
 ```
 
-## Fiber vs Thread Allocation Benchmark
+## Results
 
 ### Performance Summary
 
@@ -39,8 +39,8 @@ bake benchmark
 | ruby:3.4     | 3.394             | 78.586            | 23.2x            | 0.112             | 1.338              | 12.0x        |
 | ruby:3.5-rc  | 3.505             | 64.825            | 18.5x            | 0.105             | 1.968              | 18.7x        |
 
-*Allocation times are per individual fiber/thread (10,000 total allocations)*
-*Context switch times are per individual switch (2 workers × 10,000 switches = 20,000 total)*
+  - Allocation times are per individual fiber/thread (10,000 total allocations).
+  - Context switch times are per individual switch (2 workers × 10,000 switches = 20,000 total).
 
 ### Context Switching Performance
 
@@ -93,34 +93,34 @@ bake benchmark
 | ruby:3.5-rc  | Fibers  | 3.522            | 1.023           | 3.4x        |
 |              | Threads | 65.108           | 70.522          | 0.9x        |
 
-*Shows allocation time improvement from cold start to cache-warmed state*
-*Cache warming: 10,000 fibers/threads with 1 switch, 10 repeats*
+  - Shows allocation time improvement from cold start to cache-warmed state.
+  - Cache warming: 10,000 fibers/threads with 1 switch, 10 repeats.
 
 ### Throughput Performance
 
 | Ruby Version | Mode    | Total Time (ms) | Concurrency | Max Throughput (req/s) |
-|--------------|---------|-----------------|-------------|------------------------|
-| ruby:2.5     | Fibers  | 43.5            | 1,000       | 22976                  |
-|              | Threads | 265.4           | 1,000       | 3767                   |
-| ruby:2.6     | Fibers  | 18.3            | 1,000       | 54558                  |
-|              | Threads | 299.5           | 1,000       | 3338                   |
-| ruby:2.7     | Fibers  | 13.6            | 1,000       | 73757                  |
-|              | Threads | 290.2           | 1,000       | 3446                   |
-| ruby:3.0     | Fibers  | 13.8            | 1,000       | 72543                  |
-|              | Threads | 305.3           | 1,000       | 3276                   |
-| ruby:3.1     | Fibers  | 14.2            | 1,000       | 70195                  |
-|              | Threads | 304.4           | 1,000       | 3286                   |
-| ruby:3.2     | Fibers  | 14.4            | 1,000       | 69594                  |
-|              | Threads | 313.2           | 1,000       | 3193                   |
-| ruby:3.3     | Fibers  | 11.3            | 1,000       | 88621                  |
-|              | Threads | 189.8           | 1,000       | 5268                   |
-| ruby:3.4     | Fibers  | 12.8            | 1,000       | 78315                  |
-|              | Threads | 194.0           | 1,000       | 5154                   |
-| ruby:3.5-rc  | Fibers  | 11.3            | 1,000       | 88881                  |
-|              | Threads | 198.8           | 1,000       | 5030                   |
+|--------------|---------|-----------------|-------------|----------------------|
+| ruby:2.5     | Fibers  | 43.5            | 1,000       | 22976                |
+|              | Threads | 265.4           | 1,000       | 3767                 |
+| ruby:2.6     | Fibers  | 18.3            | 1,000       | 54558                |
+|              | Threads | 299.5           | 1,000       | 3338                 |
+| ruby:2.7     | Fibers  | 13.6            | 1,000       | 73757                |
+|              | Threads | 290.2           | 1,000       | 3446                 |
+| ruby:3.0     | Fibers  | 13.8            | 1,000       | 72543                |
+|              | Threads | 305.3           | 1,000       | 3276                 |
+| ruby:3.1     | Fibers  | 14.2            | 1,000       | 70195                |
+|              | Threads | 304.4           | 1,000       | 3286                 |
+| ruby:3.2     | Fibers  | 14.4            | 1,000       | 69594                |
+|              | Threads | 313.2           | 1,000       | 3193                 |
+| ruby:3.3     | Fibers  | 11.3            | 1,000       | 88621                |
+|              | Threads | 189.8           | 1,000       | 5268                 |
+| ruby:3.4     | Fibers  | 12.8            | 1,000       | 78315                |
+|              | Threads | 194.0           | 1,000       | 5154                 |
+| ruby:3.5-rc  | Fibers  | 11.3            | 1,000       | 88881                |
+|              | Threads | 198.8           | 1,000       | 5030                 |
 
-*Shows maximum throughput in cache-warmed state*
-*Throughput test: 1,000 fibers/threads with 100 switches, 10 repeats*
+  - Shows maximum throughput in cache-warmed state.
+  - Throughput test: 1,000 fibers/threads with 100 switches, 10 repeats.
 
 ## Performance History
 

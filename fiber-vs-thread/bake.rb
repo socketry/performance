@@ -20,24 +20,11 @@ MODES = {
 	}
 }.freeze
 
-# Helper method to recursively convert string keys to symbols
-def symbolize_keys(obj)
-	case obj
-	when Hash
-		obj.transform_keys(&:to_sym).transform_values { |v| symbolize_keys(v) }
-	when Array
-		obj.map { |item| symbolize_keys(item) }
-	else
-		obj
-	end
-end
-
-# Public tasks that can be invoked with `bake <task_name>`
-
+# Benchmark the performance of fibers vs threads in Ruby.
 # @parameter force [Boolean] Whether to force re-run the benchmarks even if results exist.
 # @parameter versions [Array(String)] Specific Ruby versions to benchmark.
 def benchmark(force: false, versions: RUBY_VERSIONS)
-	puts "# Fiber vs Thread Allocation Benchmark"
+	puts "## Fiber vs Thread Allocation Benchmark"
 	
 	# Generate results tables (will run benchmarks on-demand if needed)
 	generate_markdown_tables(versions, force: force)
@@ -50,7 +37,7 @@ private
 # @parameter mode [Symbol] One of the available modes (e.g., :fibers, :threads).
 # @parameter arguments [Array(String)] Arguments to pass to the benchmark script.
 # @parameter force [Boolean] Whether to force regeneration even if cached result exists.
-# @return [Hash] Parsed YAML data from the benchmark.
+# @returns [Hash] Parsed YAML data from the benchmark.
 def run_benchmark(version, mode, arguments, force: false)
 	# Compute path
 	arguments_key = arguments.join('-')
@@ -87,43 +74,38 @@ def run_benchmark(version, mode, arguments, force: false)
 	else
 		$stderr.puts "Using cached result for Ruby #{version} #{mode} #{arguments.join(' ')}"
 	end
-
+	
 	# Load the result file and return the data
-	begin
-		result_data = YAML.load_file(output_path, symbolize_names: true)
-		
-		# If this is a repeat benchmark, extract the final result
-		if result_data[:benchmarks] && result_data[:benchmarks].any?
-			# Use the last benchmark result (after all repeats)
-			final_benchmark = result_data[:benchmarks].last
-			result_data.merge!(final_benchmark)
-		end
-		
-		# Add metadata if not already present
-		unless result_data[:timestamp]
-			result_data[:timestamp] = Time.now.iso8601
-			result_data[:ruby_version] = version
-			result_data[:mode] = mode
-			result_data[:arguments] = arguments
-			
-			# Update the file with metadata
-			File.write(output_path, YAML.dump(result_data))
-		end
-		
-		return result_data
-	rescue => e
-		$stderr.puts "Error loading result file: #{e.message}"
-		return { error: 'Failed to load result file', file: output_path }
+	result_data = YAML.load_file(output_path, symbolize_names: true)
+	
+	# If this is a repeat benchmark, extract the final result
+	if result_data[:benchmarks] && result_data[:benchmarks].any?
+		# Use the last benchmark result (after all repeats)
+		final_benchmark = result_data[:benchmarks].last
+		result_data.merge!(final_benchmark)
 	end
+	
+	# Add metadata if not already present
+	unless result_data[:timestamp]
+		result_data[:timestamp] = Time.now.iso8601
+		result_data[:ruby_version] = version
+		result_data[:mode] = mode
+		result_data[:arguments] = arguments
+		
+		# Update the file with metadata
+		File.write(output_path, YAML.dump(result_data))
+	end
+	
+	return result_data
 end
 
-
-
 def generate_markdown_tables(versions, force: false)
-	puts "\n### Performance Summary\n\n"
+	puts
+	puts "### Performance Summary"
+	puts
 	puts "| Ruby Version | Fiber Alloc (μs)  | Thread Alloc (μs) | Allocation Ratio | Fiber Switch (μs) | Thread Switch (μs) | Switch Ratio |"
 	puts "|--------------|-------------------|-------------------|------------------|-------------------|--------------------|--------------| "
-
+	
 	versions.each do |version|
 		# Pull memory usage data
 		fiber_memory = run_benchmark(version, :fibers, ['10000', '2'], force: force)
@@ -148,14 +130,16 @@ def generate_markdown_tables(versions, force: false)
 		# Format times
 		puts "| #{version.ljust(12)} | #{("%.3f" % fiber_alloc_per_us).ljust(17)} | #{("%.3f" % thread_alloc_per_us).ljust(17)} | #{("%.1fx" % allocation_ratio).ljust(16)} | #{("%.3f" % fiber_switch_per_us).ljust(17)} | #{("%.3f" % thread_switch_per_us).ljust(18)} | #{("%.1fx" % switch_ratio).ljust(12)} |"
 	end
-
-	puts "\n*Allocation times are per individual fiber/thread (10,000 total allocations)*"
-	puts "*Context switch times are per individual switch (2 workers × 10,000 switches = 20,000 total)*"
-
-	puts "\n### Context Switching Performance\n\n"
+	
+	puts
+	puts "  - Allocation times are per individual fiber/thread (10,000 total allocations)."
+	puts "  - Context switch times are per individual switch (2 workers × 10,000 switches = 20,000 total)."
+	puts
+	puts "### Context Switching Performance"
+	puts
 	puts "| Ruby Version | Fiber Switches/sec | Thread Switches/sec | Performance Ratio |"
 	puts "|--------------|--------------------|---------------------|-------------------|"
-
+	
 	versions.each do |version|
 		# Pull context switching data
 		fiber_switch = run_benchmark(version, :fibers, ['2', '10000'], force: force)
@@ -171,11 +155,13 @@ def generate_markdown_tables(versions, force: false)
 		
 		puts "| #{version.ljust(12)} | #{fiber_rate_formatted.ljust(18)} | #{thread_rate_formatted.ljust(19)} | #{("%.1fx" % switch_ratio).ljust(17)} |"
 	end
-
-	puts "\n### Memory Usage Per Unit\n\n"
+	
+	puts
+	puts "### Memory Usage Per Unit"
+	puts
 	puts "| Ruby Version | Count      | Fiber Memory (bytes) | Thread Memory (bytes) | Fiber Total (MB) | Thread Total (MB) |"
 	puts "|--------------|------------|----------------------|-----------------------|-------------------|-------------------|"
-
+	
 	versions.each do |version|
 		# Pull memory usage data
 		fiber_memory = run_benchmark(version, :fibers, ['10000', '2'], force: force)
@@ -197,11 +183,13 @@ def generate_markdown_tables(versions, force: false)
 		
 		puts "| #{version.ljust(12)} | #{count.ljust(10)} | #{fiber_per_formatted.ljust(20)} | #{thread_per_formatted.ljust(21)} | #{fiber_total_mb.ljust(17)} | #{thread_total_mb.ljust(17)} |"
 	end
-
-	puts "\n### Cache Warming Performance\n\n"
+	
+	puts
+	puts "### Cache Warming Performance"
+	puts
 	puts "| Ruby Version | Mode    | First Alloc (μs) | Last Alloc (μs) | Improvement |"
 	puts "|--------------|---------|------------------|-----------------|-------------|"
-
+	
 	versions.each do |version|
 		# Pull regular allocation data (10000 fibers/threads, 1 switch, 10 repeats)
 		fiber_cache = run_benchmark(version, :fibers, ['10000', '2', '10'], force: force)
@@ -228,14 +216,15 @@ def generate_markdown_tables(versions, force: false)
 		puts "| #{version.ljust(12)} | Fibers  | #{("%.3f" % fiber_first_alloc_per_us).ljust(16)} | #{("%.3f" % fiber_last_alloc_per_us).ljust(15)} | #{("%.1fx" % fiber_improvement).ljust(11)} |"
 		puts "| #{' ' * 12} | Threads | #{("%.3f" % thread_first_alloc_per_us).ljust(16)} | #{("%.3f" % thread_last_alloc_per_us).ljust(15)} | #{("%.1fx" % thread_improvement).ljust(11)} |"
 	end
-
-	puts "\n*Shows allocation time improvement from cold start to cache-warmed state*"
-	puts "*Cache warming: 10,000 fibers/threads with 1 switch, 10 repeats*"
-
+	
+	puts
+	puts "  - Shows allocation time improvement from cold start to cache-warmed state."
+	puts "  - Cache warming: 10,000 fibers/threads with 1 switch, 10 repeats."
+	
 	puts "\n### Throughput Performance\n\n"
 	puts "| Ruby Version | Mode    | Total Time (ms) | Concurrency | Max Throughput (req/s) |"
 	puts "|--------------|---------|-----------------|-------------|----------------------|"
-
+	
 	versions.each do |version|
 		# Pull throughput data (1000 fibers/threads, 100 switches, 10 repeats)
 		fiber_throughput = run_benchmark(version, :fibers, ['1000', '100', '10'], force: force)
@@ -254,7 +243,8 @@ def generate_markdown_tables(versions, force: false)
 		puts "| #{version.ljust(12)} | Fibers  | #{("%.1f" % fiber_last[:time_ms]).ljust(15)} | #{("1,000").ljust(11)} | #{("%.0f" % fiber_max_throughput).ljust(20)} |"
 		puts "| #{' ' * 12} | Threads | #{("%.1f" % thread_last[:time_ms]).ljust(15)} | #{("1,000").ljust(11)} | #{("%.0f" % thread_max_throughput).ljust(20)} |"
 	end
-
-	puts "\n*Shows maximum throughput in cache-warmed state*"
-	puts "*Throughput test: 1,000 fibers/threads with 100 switches, 10 repeats*"
+	
+	puts
+	puts "  - Shows maximum throughput in cache-warmed state."
+	puts "  - Throughput test: 1,000 fibers/threads with 100 switches, 10 repeats."
 end
