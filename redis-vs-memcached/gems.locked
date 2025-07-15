@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/shopify/dalli
+  revision: ef4a141d727593c34f3325fc888e286f6ec2d74a
+  branch: nickamorim/sock-sync
+  specs:
+    dalli (3.2.9)
+      logger
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -20,7 +28,6 @@ GEM
       fiber-annotation
       fiber-local (~> 1.1)
       json
-    dalli (3.2.8)
     fiber-annotation (0.2.0)
     fiber-local (1.1.0)
       fiber-storage
@@ -50,7 +57,7 @@ PLATFORMS
 
 DEPENDENCIES
   async-redis
-  dalli
+  dalli!
   logger
   redis
   sus
