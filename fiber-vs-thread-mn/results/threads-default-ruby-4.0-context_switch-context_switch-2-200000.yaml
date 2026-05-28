@@ -1,0 +1,11 @@
+---
+:scenario: context_switch
+:workers: 2
+:switches_per_worker: 200000
+:total_switches: 400000
+:time_ms: 524.396
+:switch_us: 1.311
+:switches_per_second: 762783
+:ruby_version: 4.0.5
+:platform: x86_64-linux
+:mode: threads

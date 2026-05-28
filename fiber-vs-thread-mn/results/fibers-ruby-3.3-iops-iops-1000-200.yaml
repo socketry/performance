@@ -1,0 +1,13 @@
+---
+:scenario: iops
+:workers: 1000
+:operations_per_worker: 200
+:total_operations: 200000
+:processed_operations: 200000
+:bytes_processed: 164000000
+:time_ms: 360.782
+:iops: 554351
+:operation_us: 1.804
+:ruby_version: 3.3.11
+:platform: x86_64-linux
+:mode: fibers

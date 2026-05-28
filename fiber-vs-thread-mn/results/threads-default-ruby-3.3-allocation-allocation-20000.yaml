@@ -1,0 +1,9 @@
+---
+:scenario: allocation
+:count: 20000
+:time_ms: 942.402
+:allocation_us: 47.12
+:allocations_per_second: 21222
+:ruby_version: 3.3.11
+:platform: x86_64-linux
+:mode: threads

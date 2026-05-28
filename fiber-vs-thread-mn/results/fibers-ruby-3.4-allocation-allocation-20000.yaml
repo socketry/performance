@@ -1,0 +1,9 @@
+---
+:scenario: allocation
+:count: 20000
+:time_ms: 10.021
+:allocation_us: 0.501
+:allocations_per_second: 1995743
+:ruby_version: 3.4.9
+:platform: x86_64-linux
+:mode: fibers
