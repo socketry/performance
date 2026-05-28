@@ -22,14 +22,15 @@ def benchmark_fiber_allocation(count)
 end
 
 def benchmark_fiber_context_switch(workers, switches)
-	total_switches = 0
+	total_yields = 0
+	total_resumes = 0
 	fibers = []
 
 	time = Benchmark.realtime do
 		workers.times do
 			fibers << Fiber.new do
 				switches.times do
-					total_switches += 1
+					total_yields += 1
 					Fiber.yield
 				end
 			end
@@ -37,15 +38,22 @@ def benchmark_fiber_context_switch(workers, switches)
 
 		switches.times do
 			fibers.each do |fiber|
-				fiber.resume if fiber.alive?
+				next unless fiber.alive?
+
+				total_resumes += 1
+				fiber.resume
 			end
 		end
 	end
+
+	total_switches = total_yields + total_resumes
 
 	{
 		scenario: 'context_switch',
 		workers: workers,
 		switches_per_worker: switches,
+		total_yields: total_yields,
+		total_resumes: total_resumes,
 		total_switches: total_switches,
 		time_ms: (time * 1000.0).round(3),
 		switch_us: microseconds_per(time, total_switches).round(3),

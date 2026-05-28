@@ -4,14 +4,15 @@ require_relative 'support'
 require 'fiber'
 
 def benchmark_fibers(count, switches = 1)
-	switch_count = 0
+	total_yields = 0
+	total_resumes = 0
 	fibers = []
 	
 	time = Benchmark.realtime do
 		count.times do
 			fibers << Fiber.new do
 				switches.times do
-					switch_count += 1
+					total_yields += 1
 					Fiber.yield
 				end
 			end
@@ -21,23 +22,30 @@ def benchmark_fibers(count, switches = 1)
 		switches.times do
 			fibers.each do |fiber|
 				begin
-					fiber.resume if fiber.alive?
+					if fiber.alive?
+						total_resumes += 1
+						fiber.resume
+					end
 				rescue FiberError
 					# Fiber already terminated, skip it
 				end
 			end
 		end
 	end
+
+	total_switches = total_yields + total_resumes
 	
 	# Calculate rates
 	creations_per_second = count / time
-	switches_per_second = switch_count / time
+	switches_per_second = total_switches / time
 	
 	# Output YAML directly (without memory info - will be reported globally)
 	result = {
 		count: count,
 		switches: switches,
-		total_switches: switch_count,
+		total_yields: total_yields,
+		total_resumes: total_resumes,
+		total_switches: total_switches,
 		time_ms: (time * 1000).round(3),
 		creation_rate: creations_per_second.round(0),
 		switch_rate: switches_per_second.round(0)

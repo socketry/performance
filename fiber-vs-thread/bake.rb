@@ -124,8 +124,10 @@ def generate_markdown_tables(versions, force: false)
 		thread_alloc_per_us = (thread_memory[:time_ms] * 1000.0 / 10000.0)
 		
 		# Calculate time per context switch in microseconds
-		fiber_switch_per_us = (fiber_switch[:time_ms] * 1000.0 / 20000.0)
-		thread_switch_per_us = (thread_switch[:time_ms] * 1000.0 / 20000.0)
+		fiber_switch_total = (fiber_switch[:total_switches] || 20000).to_f
+		thread_switch_total = (thread_switch[:total_switches] || 20000).to_f
+		fiber_switch_per_us = (fiber_switch[:time_ms] * 1000.0 / fiber_switch_total)
+		thread_switch_per_us = (thread_switch[:time_ms] * 1000.0 / thread_switch_total)
 		
 		# Format times
 		puts "| #{version.ljust(12)} | #{("%.3f" % fiber_alloc_per_us).ljust(17)} | #{("%.3f" % thread_alloc_per_us).ljust(17)} | #{("%.1fx" % allocation_ratio).ljust(16)} | #{("%.3f" % fiber_switch_per_us).ljust(17)} | #{("%.3f" % thread_switch_per_us).ljust(18)} | #{("%.1fx" % switch_ratio).ljust(12)} |"
@@ -133,7 +135,7 @@ def generate_markdown_tables(versions, force: false)
 	
 	puts
 	puts "  - Allocation times are per individual fiber/thread (10,000 total allocations)."
-	puts "  - Context switch times are per individual switch (2 workers × 10,000 switches = 20,000 total)."
+	puts "  - Context switch times are per reported transition event from each benchmark result."
 	puts
 	puts "### Context Switching Performance"
 	puts
